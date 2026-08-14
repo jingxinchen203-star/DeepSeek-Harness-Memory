@@ -110,7 +110,11 @@ describe('third-party memory MCP example overlays', () => {
         serverName: contract.serverName,
         transport: 'stdio',
         command: process.execPath,
-        args: [fixtureServer],
+        // The fixture is TypeScript. A bare `node fixture-server.ts` exits with
+        // ERR_UNKNOWN_FILE_EXTENSION, while the stdio transport only observes a
+        // closed child and the discovery wait eventually times out. Keep the
+        // runtime explicit so the test is deterministic in a clean checkout.
+        args: ['--import', 'tsx', fixtureServer],
         env: {},
         cwd: root,
         toolCallTimeoutMs: 5_000,
