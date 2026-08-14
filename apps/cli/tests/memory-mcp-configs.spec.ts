@@ -129,4 +129,13 @@ describe('third-party memory MCP example overlays', () => {
     )
     await waitForTool(ctx, `mcp__${contract.serverName}__greet`)
   }, 15_000)
+
+  it('keeps memory overlays opt-in and free of package-manager or secret commands', () => {
+    for (const contract of examples) {
+      const source = readFileSync(resolve(exampleDir, contract.file), 'utf8')
+      expect(source).not.toMatch(/npm\s+(install|exec)|pnpm\s+(add|dlx)|npx\s+/u)
+      expect(source).not.toMatch(/(?:API_KEY|TOKEN|PASSWORD)\s*:/u)
+      expect(source).toContain("transport: stdio")
+    }
+  })
 })
