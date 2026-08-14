@@ -1,5 +1,8 @@
 # DeepSeek-Harness-Memory
 
+![DeepSeek Harness Memory project hero](assets/project-hero.png)
+
+
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Node](https://img.shields.io/badge/node-%3E%3D22.19.0-brightgreen)
 ![pnpm](https://img.shields.io/badge/pnpm-11.7.0-blue)
