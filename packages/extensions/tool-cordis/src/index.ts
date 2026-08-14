@@ -158,29 +158,20 @@ export function apply(ctx: Context): void {
       + 'returned IDs.',
     parameters: {
       plugin: {
+        type: 'object',
         required: true,
-        oneOf: [
-          {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              kind: { type: 'string', const: 'new', required: true },
-              idPrefix: {
-                type: 'string',
-                required: true,
-                description: 'Suggested semantic prefix of 3–6 lowercase English letters; the Host adds a unique numeric suffix.',
-              },
-            },
+        additionalProperties: false,
+        properties: {
+          kind: { type: 'string', enum: ['new', 'existing'], required: true },
+          idPrefix: {
+            type: 'string',
+            description: 'Required when kind is "new": a semantic prefix of 3–6 lowercase English letters; the Host adds a unique numeric suffix.',
           },
-          {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              kind: { type: 'string', const: 'existing', required: true },
-              pluginId: { type: 'string', required: true, description: 'Exact ID of an existing Plugin; the new Package is appended to that instance.' },
-            },
+          pluginId: {
+            type: 'string',
+            description: 'Required when kind is "existing": exact ID of an existing Plugin; the new Package is appended to that instance.',
           },
-        ],
+        },
       },
       name: { type: 'string', required: true, description: 'Short, readable Package name.' },
       purpose: { type: 'string', required: true, description: 'One-sentence, user-facing description of the Package purpose.' },
@@ -216,8 +207,8 @@ export function apply(ctx: Context): void {
     },
     execute(args, exec) {
       const plugin = args.plugin.kind === 'new'
-        ? { kind: 'new' as const, idPrefix: args.plugin.idPrefix }
-        : { kind: 'existing' as const, pluginId: CordisDynamicPluginId(args.plugin.pluginId) }
+        ? { kind: 'new' as const, idPrefix: args.plugin.idPrefix as string }
+        : { kind: 'existing' as const, pluginId: CordisDynamicPluginId(args.plugin.pluginId as string) }
       const receipt = ctx.dynamicCordisRunner.define({
         sessionId: requireAgent(exec).id,
         plugin,
