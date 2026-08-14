@@ -6,6 +6,7 @@ import { scrubbedParentEnv } from '@deepseek-ai/dsh-subprocess'
 import { spawnSubprocess } from '@deepseek-ai/dsh-subprocess-local/src/spawn.ts'
 
 const fixtureServer = fileURLToPath(new URL('./fixture-server.ts', import.meta.url))
+const tsxLoader = fileURLToPath(new URL('../../../../node_modules/tsx/dist/loader.mjs', import.meta.url))
 
 /** A recorded server→client request the test's handler saw. */
 interface SeenRequest { method: string; params: unknown }
@@ -28,7 +29,7 @@ function connect(
 ): LspConnection {
   const conn = new LspConnection({
     command: process.execPath,
-    args: [fixtureServer],
+    args: ['--import', tsxLoader, fixtureServer],
     cwd: process.cwd(),
     env: { ...scrubbedParentEnv(), ...env },
     maxMessageBytes: 16_000_000,

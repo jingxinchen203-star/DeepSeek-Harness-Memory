@@ -13,6 +13,7 @@ import * as LspLocal from '@deepseek-ai/dsh-lsp-stdio'
 import type { LspLocalServerConfig } from '@deepseek-ai/dsh-lsp-stdio'
 
 const fixtureServer = fileURLToPath(new URL('./fixture-server.ts', import.meta.url))
+const tsxLoader = fileURLToPath(new URL('../../../../node_modules/tsx/dist/loader.mjs', import.meta.url))
 
 let root: string
 let ws: string
@@ -32,7 +33,7 @@ afterEach(async () => {
 function fakeServer(fakeEnv: Record<string, string> = {}, overrides: Partial<LspLocalServerConfig> = {}): LspLocalServerConfig {
   return {
     command: process.execPath,
-    args: [fixtureServer],
+    args: ['--import', tsxLoader, fixtureServer],
     env: { ...fakeEnv },
     extensionToLanguage: { '.ts': 'typescript' },
     ...overrides,

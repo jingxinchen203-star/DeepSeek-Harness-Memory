@@ -25,6 +25,7 @@ import {
 } from '../src/run.ts'
 
 const fakeRuntime = fileURLToPath(new URL('../../../sdk/client/tests/fake-runtime.ts', import.meta.url))
+const tsxLoader = fileURLToPath(new URL('../../../../node_modules/tsx/dist/loader.mjs', import.meta.url))
 
 /** A parent Agent stub. The SDK backend reads exactly one thing off it: the session header's cwd (the workspace its child inherits). */
 const fakeParent = { id: 'parent', session: { header: { cwd: process.cwd() } } } as unknown as Agent
@@ -43,7 +44,8 @@ async function setup(fakeEnv: Record<string, string> = {}, config: Partial<sdk.C
   await ctx.plugin(sdk, {
     providerName: 'dsh-sdk',
     command: process.execPath,
-    args: [fakeRuntime],
+    // The fake runtime is TypeScript; bare Node would fail before the SDK handshake.
+    args: ['--import', tsxLoader, fakeRuntime],
     provider: 'fake-provider',
     model: 'fake-model',
     env: fakeEnv,
@@ -223,7 +225,8 @@ describe('dsh-subagent-dsh-sdk provider', () => {
       const controller = new AbortController()
       const spec: SdkRunSpec = {
         command: process.execPath,
-        args: [fakeRuntime],
+        // The fake runtime is TypeScript; bare Node would fail before the SDK handshake.
+        args: ['--import', tsxLoader, fakeRuntime],
         cwd: process.cwd(),
         provider: 'p',
         model: 'm',
@@ -306,7 +309,8 @@ describe('dsh-subagent-dsh-sdk provider', () => {
     const controller = new AbortController()
     const spec: SdkRunSpec = {
       command: process.execPath,
-      args: [fakeRuntime],
+      // The fake runtime is TypeScript; bare Node would fail before the SDK handshake.
+      args: ['--import', tsxLoader, fakeRuntime],
       cwd: process.cwd(),
       provider: 'p',
       model: 'm',
@@ -324,7 +328,8 @@ describe('dsh-subagent-dsh-sdk provider', () => {
     const seen: string[] = []
     const spec: SdkRunSpec = {
       command: process.execPath,
-      args: [fakeRuntime],
+      // The fake runtime is TypeScript; bare Node would fail before the SDK handshake.
+      args: ['--import', tsxLoader, fakeRuntime],
       cwd: process.cwd(),
       provider: 'p',
       model: 'm',
@@ -365,7 +370,8 @@ describe('dsh-subagent-dsh-sdk provider', () => {
     const fiber = await ctx.plugin(sdk, {
       providerName: 'sdk-hmr',
       command: process.execPath,
-      args: [fakeRuntime],
+      // The fake runtime is TypeScript; bare Node would fail before the SDK handshake.
+      args: ['--import', tsxLoader, fakeRuntime],
       provider: 'p',
       model: 'm',
       env: {},

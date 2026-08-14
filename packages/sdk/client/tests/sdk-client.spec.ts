@@ -23,6 +23,7 @@ import {
 import { finalResponse, normalizeInput } from '../src/api.ts'
 
 const fakeRuntime = fileURLToPath(new URL('./fake-runtime.ts', import.meta.url))
+const tsxLoader = fileURLToPath(new URL('../../../../node_modules/tsx/dist/loader.mjs', import.meta.url))
 
 const cleanups: (() => Promise<void>)[] = []
 afterEach(async () => {
@@ -35,7 +36,8 @@ type LaunchOverrides = Partial<ConstructorParameters<typeof HarnessClient>[0]>
 function fakeLaunch(env: Record<string, string> = {}, extra: LaunchOverrides = {}) {
   return {
     command: process.execPath,
-    args: [fakeRuntime],
+    // Bare Node rejects the TypeScript fixture with ERR_UNKNOWN_FILE_EXTENSION.
+    args: ['--import', tsxLoader, fakeRuntime],
     env: { ...process.env as Record<string, string>, ...env },
     ...extra,
   }

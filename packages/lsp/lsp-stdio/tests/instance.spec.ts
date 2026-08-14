@@ -15,6 +15,7 @@ import { scrubbedParentEnv } from '@deepseek-ai/dsh-subprocess'
 import { spawnSubprocess } from '@deepseek-ai/dsh-subprocess-local/src/spawn.ts'
 
 const fixtureServer = fileURLToPath(new URL('./fixture-server.ts', import.meta.url))
+const tsxLoader = fileURLToPath(new URL('../../../../node_modules/tsx/dist/loader.mjs', import.meta.url))
 
 let root: string
 let ws: string
@@ -46,7 +47,8 @@ function makeInstance(
 ): LspInstance {
   const instance = new LspInstance({
     command: process.execPath,
-    args: [fixtureServer],
+    // Bare Node rejects this TypeScript fixture; load the tsx runtime explicitly.
+    args: ['--import', tsxLoader, fixtureServer],
     cwd: ws,
     workspaceUri: pathToFileURL(ws).href,
     env: { ...scrubbedParentEnv(), ...env },

@@ -1,9 +1,12 @@
 import { copyFile, mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { Worker } from 'node:worker_threads'
 import { expect, it } from 'vitest'
 import { decodeWorkerJson } from '../src/worker-json.ts'
+
+const tsxLoader = fileURLToPath(new URL('../../../../node_modules/tsx/dist/loader.mjs', import.meta.url))
 
 /**
  * Prove the unbuilt worker is a self-contained source closure. Copying it out
@@ -22,7 +25,7 @@ it('boots the source worker without workspace package outputs', async () => {
     worker = new Worker(join(directory, 'worker.ts'), {
       workerData: { code: 'return { answer: 42 }', namespaces: [], maxOutputBytes: 65_536 },
       env: {},
-      execArgv: [],
+      execArgv: ['--import', tsxLoader],
     })
     const message = await new Promise<unknown>((resolve, reject) => {
       worker?.once('message', resolve)
